@@ -1,6 +1,6 @@
+from contextlib import AsyncExitStack
 import pytest
 from httpx import AsyncClient
-from main import get_todo_item
 
 from main import app
 from schemas.todo_item_schema import TodoItem
@@ -83,3 +83,33 @@ async def test_valid_id_when_get_by_id_then_return_correct_todo():
     # Assert
     assert response.status_code == 200
     assert response.json() == {'todo_item': expectedTodo}
+
+@pytest.mark.asyncio
+async def test_valid_id_when_delete_todo_then_remove_todo():
+    # Assign
+    data = 1
+
+    async with AsyncClient(app=app, base_url='http://test') as client:
+        # Act
+        response = await client.delete(f'/{data}')
+
+    # Assert
+    assert response.status_code == 200
+
+@pytest.mark.asyncio
+async def test_valid_item_when_update_item_then_update_or_create_item():
+    # Assign
+    data = TodoItem(
+        id = 1,
+        title='Title',
+        body='Test body',
+        completed=True
+    )
+
+    async with AsyncClient(app=app, base_url='http://test') as client:
+        # Act
+        res = await client.put('/', data=data.json())
+
+    # Assert
+    assert res.status_code == 200
+    assert res.json() == {'todo_item': data}
