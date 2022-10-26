@@ -7,6 +7,7 @@ import pytest
 
 from services.database import Base, get_db
 from main import app
+from models import TodoItem
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
